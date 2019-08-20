@@ -1,10 +1,17 @@
-# tasker
+# tasker 😃
 
-A new Flutter project.
+A simple todo app built with flutter
+
+| Screenshot                                                                      | Screenshot                                                                      |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| <img src="https://github.com/newtonmunene99/tunes/blob/master/Screenshot1.png"> | <img src="https://github.com/newtonmunene99/tunes/blob/master/Screenshot2.png"> |
+| ------------                                                                    | ------------                                                                    |
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. `flutter create --androidx .` if android/ios folders aren't present.
+2. `flutter packages get`
+3. `flutter run`
 
 A few resources to get you started if this is your first Flutter project:
 
