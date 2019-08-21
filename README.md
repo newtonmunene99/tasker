@@ -4,7 +4,7 @@ A simple todo app built with flutter
 
 | Screenshot                                                                      | Screenshot                                                                      |
 | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| <img src="https://github.com/newtonmunene99/tunes/blob/master/Screenshot1.png"> | <img src="https://github.com/newtonmunene99/tunes/blob/master/Screenshot2.png"> |
+| <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot1.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot2.png"> |
 | ------------                                                                    | ------------                                                                    |
 
 ## Getting Started
