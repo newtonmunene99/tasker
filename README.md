@@ -2,10 +2,10 @@
 
 A simple todo app built with flutter
 
-| Screenshot                                                                      | Screenshot                                                                      |
-| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Screenshot                                                                       | Screenshot                                                                       |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot1.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot2.png"> |
-| ------------                                                                    | ------------                                                                    |
+| ------------                                                                     | ------------                                                                     |
 
 ## Getting Started
 
@@ -20,6 +20,15 @@ A simple todo app built with flutter
 3. SQLite for persistence. 
 4. Uses moor as an abstraction layer on top of SQFlite.
 
+## Roadmap
+- [x] Option to add due date
+- [x] Option to tag user tasks
+- [ ] Local push notifications
+- [ ] Option to edit and delete tasks
+- [ ] Option to edit tags
+- [ ] Publish to play store
+
+-----------------------------------------------------------------
 A few resources to get you started if this is your first Flutter project:
 
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
