@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
-import 'package:provider/provider.dart';
-import 'package:tasker/database/database.dart';
-import 'package:tasker/widgets/bottom_sheet.dart';
-import 'package:tasker/widgets/checkbox.dart';
+import '../database/database.dart';
+import './tags.dart';
+import './tasks.dart';
+import '../widgets/bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +14,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController _taskFieldController = TextEditingController();
   final DateTime _today = DateTime.now();
+  PageController _controller =
+      PageController(initialPage: 0, viewportFraction: 1.0);
+  int _currentIndex = 0;
+  List<Map<String, dynamic>> _pages = [
+    {
+      "name": "Tasks",
+      "widget": TasksPage(),
+      "icon": FontAwesome.tasks,
+    },
+    {
+      "name": "Tags",
+      "widget": TagsPage(),
+      "icon": AntDesign.tagso,
+    },
+  ];
   final Map<int, String> _months = {
     1: "Jan",
     2: "Feb",
@@ -38,17 +53,118 @@ class _HomePageState extends State<HomePage> {
     7: "Sunday",
   };
 
+  void _navigateTo(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    _controller.animateToPage(
+      index,
+      curve: Curves.linear,
+      duration: Duration(milliseconds: 200),
+    );
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
-    AppDatabase _db = Provider.of<AppDatabase>(context);
     return Scaffold(
+      drawer: Drawer(
+        child: Container(
+          decoration: BoxDecoration(),
+          child: Center(
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                ...(_pages
+                    .asMap()
+                    .map(
+                      (i, page) => MapEntry(
+                        i,
+                        Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            decoration: BoxDecoration(
+                              color: _currentIndex == i
+                                  ? Colors.grey[200]
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: ListTile(
+                              // leading: Icon(
+                              //   page["icon"],
+                              //   color: Colors.black54,
+                              // ),
+                              title: Text(
+                                page["name"],
+                                style: TextStyle(
+                                  color: _currentIndex == i
+                                      ? Theme.of(context).primaryColor
+                                      : Colors.black54,
+                                  letterSpacing: 1.0,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              trailing: _currentIndex == i
+                                  ? Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Theme.of(context).primaryColor,
+                                    )
+                                  : null,
+                              onTap: () {
+                                _navigateTo(i);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .values
+                    .toList()),
+                Center(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: ListTile(
+                      // leading: Icon(
+                      //   Icons.exit_to_app,
+                      //   color: Colors.black54,
+                      // ),
+                      title: Text(
+                        "About",
+                        style: TextStyle(
+                          color: Colors.black54,
+                          letterSpacing: 1.0,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      onTap: () {},
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: Text(
-          "Tasker",
+          "${_currentIndex == 0 ? "Tasker" : _pages[_currentIndex]["name"]}",
           style: TextStyle(
             fontSize: 40,
             letterSpacing: 1.0,
           ),
+        ),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Feather.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100.0),
@@ -119,76 +235,22 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: StreamBuilder<List<Task>>(
-        stream: _db.taskDao.watchAllTasks(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.length > 0) {
-              return ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
-                itemBuilder: (context, index) {
-                  return Dismissible(
-                    key: Key(snapshot.data[index].id.toString()),
-                    onDismissed: (direction) async {
-                      await _db.taskDao.deleteTask(snapshot.data[index]);
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Deleted"),
-                        duration: Duration(seconds: 5),
-                        action: SnackBarAction(
-                          label: "Undo",
-                          onPressed: () async {
-                            await _db.taskDao.insertTask(
-                              TasksCompanion(
-                                task: moor.Value(snapshot.data[index].task),
-                                completed:
-                                    moor.Value(snapshot.data[index].completed),
-                              ),
-                            );
-                          },
-                        ),
-                      ));
-                    },
-                    child: ListTile(
-                      leading: CircularCheckBox(
-                        checked: snapshot.data[index].completed,
-                        onChange: (value) async {
-                          print(value);
-                          await _db.taskDao.updateTask(
-                            snapshot.data[index].copyWith(completed: value),
-                          );
-                        },
-                      ),
-                      title: Text(
-                        snapshot.data[index].task,
-                        style: TextStyle(
-                          decoration: snapshot.data[index].completed
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                          fontWeight: FontWeight.w500,
-                          color: snapshot.data[index].completed
-                              ? Colors.black54
-                              : Colors.black87,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                itemCount: snapshot.data.length,
-              );
-            } else {
-              return Container();
-            }
-          } else {
-            return Container();
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Feather.plus),
-        onPressed: () {
-          // Navigator.pushNamed(context, "/task/new");
-          _addTask(context, _db);
-        },
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: PageView(
+          controller: _controller,
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[
+            ...(_pages
+                .asMap()
+                .map(
+                  (i, page) => MapEntry(i, page["widget"]),
+                )
+                .values
+                .toList())
+          ],
+          scrollDirection: Axis.horizontal,
+        ),
       ),
     );
   }
@@ -263,7 +325,7 @@ class _HomePageState extends State<HomePage> {
                                 try {
                                   await db.taskDao.insertTask(
                                     TasksCompanion(
-                                      task: moor.Value(
+                                      name: moor.Value(
                                           _taskFieldController.value.text),
                                       completed: moor.Value(false),
                                     ),
