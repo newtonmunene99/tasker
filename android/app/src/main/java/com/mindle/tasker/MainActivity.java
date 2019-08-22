@@ -1,4 +1,4 @@
-package com.example.tasker;
+package com.mindle.tasker;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
