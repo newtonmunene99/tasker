@@ -1,13 +1,12 @@
-# tasker 😃
+# Tasker 😃
 
-A simple todo app built with flutter
+A simple todo app built with flutter.
 
 | Screenshot                                                                       | Screenshot                                                                       | Screenshot                                                                       |
 | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
 | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot1.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot2.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot3.png"> |
 | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot4.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot5.png"> | <img src="https://github.com/newtonmunene99/tasker/blob/master/Screenshot6.png"> |
 | ------------------------------                                                   | ------------------------------                                                   | ------------------------------                                                   |
-
 
 ## Getting Started
 
@@ -23,12 +22,20 @@ A simple todo app built with flutter
 4. Uses moor as an abstraction layer on top of SQFlite.
 
 ## Roadmap
+
 - [x] Option to add due date
 - [x] Option to tag user tasks
-- [ ] Local push notifications
-- [ ] Option to edit and delete tasks
+- [x] Option to edit and delete tasks
+      - [x] Swipe to delete
+      - [x] Long press to edit
+- [ ] Scheduled local notifications for tasks tagged as Important and have a due date.
 - [ ] Option to edit tags
 - [ ] Publish to play store
+
+## Icon/Logo
+
+1. Replace `assets/images/logo.png` with your own.
+2. Run `flutter pub pub run flutter_launcher_icons:main` to generate platform specific icons.
 
 -----------------------------------------------------------------
 A few resources to get you started if this is your first Flutter project:
