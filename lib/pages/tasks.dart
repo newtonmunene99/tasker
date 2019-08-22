@@ -118,6 +118,10 @@ class _TasksPageState extends State<TasksPage> {
                         FontAwesome.tag,
                         color: Color(snapshot.data[index].tag.color),
                       ),
+                      onLongPress: () {
+                        print("Long pressed");
+                        _editTask(context, _db, snapshot.data[index]);
+                      },
                     ),
                   );
                 },
@@ -165,6 +169,36 @@ class _TasksPageState extends State<TasksPage> {
             ),
             child: TaskAdder(
               db: db,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _editTask(BuildContext context, AppDatabase db, TaskWithTag task) {
+    setState(() {
+      _taskFieldController.text = task.task.name;
+      _dueDate = task.task.dueDate;
+      _selectedTag = task.tag;
+    });
+
+    showModalBottomSheetApp(
+      context: context,
+      builder: (BuildContext bc) {
+        return Container(
+          color: Color(0xFF737373),
+          child: Container(
+            decoration: new BoxDecoration(
+              color: Colors.white,
+              borderRadius: new BorderRadius.only(
+                topLeft: const Radius.circular(10.0),
+                topRight: const Radius.circular(10.0),
+              ),
+            ),
+            child: TaskEditor(
+              db: db,
+              task: task,
             ),
           ),
         );
@@ -245,13 +279,13 @@ class _TaskAdderState extends State<TaskAdder> {
                     onPressed: () async {
                       DateTime due = await showDatePicker(
                         context: context,
-                        firstDate: _today,
-                        lastDate: DateTime(_today.year + 2, 12, 31),
-                        initialDate: DateTime(
+                        firstDate: DateTime(
                           _today.year,
                           _today.month,
-                          _today.day + 1,
+                          _today.day,
                         ),
+                        lastDate: DateTime(_today.year + 2, 12, 31),
+                        initialDate: _today,
                         builder: (BuildContext context, Widget child) {
                           return Theme(
                             data: ThemeData.light(),
@@ -342,6 +376,201 @@ class _TaskAdderState extends State<TaskAdder> {
                                 completed: moor.Value(false),
                                 dueDate: moor.Value(_dueDate),
                                 tag: moor.Value(_selectedTag?.name),
+                              ),
+                            );
+                            Navigator.pop(context);
+                            _taskFieldController.clear();
+                            _dueDate = null;
+                            Tag selectedTag =
+                                await widget.db.tagDao.getTag("General");
+                            setState(() {
+                              _selectedTag = selectedTag;
+                            });
+                          } catch (e) {
+                            print(e);
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class TaskEditor extends StatefulWidget {
+  final AppDatabase db;
+  final TaskWithTag task;
+
+  TaskEditor({@required this.db, this.task});
+
+  @override
+  _TaskEditorState createState() => _TaskEditorState();
+}
+
+class _TaskEditorState extends State<TaskEditor> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 16.0,
+          ),
+          child: TextField(
+            controller: _taskFieldController,
+            autofocus: true,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              hintText: "Task",
+              hintStyle: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: Colors.black54,
+              ),
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 16.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                _dueDate != null
+                    ? "Due on ${_dueDate.day}/${_dueDate.month}"
+                    : "No due date",
+              ),
+              Text("${_selectedTag?.name ?? ""}"),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 8.0,
+            bottom: 8.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ButtonBar(
+                mainAxisSize: MainAxisSize.min,
+                alignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Feather.calendar,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () async {
+                      DateTime due = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(
+                          _today.year,
+                          _today.month,
+                          _today.day,
+                        ),
+                        lastDate: DateTime(_today.year + 2, 12, 31),
+                        initialDate: _dueDate ?? _today,
+                        builder: (BuildContext context, Widget child) {
+                          return Theme(
+                            data: ThemeData.light(),
+                            child: child,
+                          );
+                        },
+                      );
+
+                      if (due != null) {
+                        TimeOfDay time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay(
+                            hour: TimeOfDay.now().hour + 1,
+                            minute: 00,
+                          ),
+                        );
+
+                        if (time != null) {
+                          setState(() {
+                            _dueDate = DateTime(due.year, due.month, due.day,
+                                time.hour, time.minute);
+                          });
+                        } else {
+                          setState(() {
+                            _dueDate = DateTime(due.year, due.month, due.day);
+                          });
+                        }
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      FontAwesome.tag,
+                      color: _selectedTag != null
+                          ? Color(_selectedTag?.color)
+                          : Theme.of(context).primaryColor,
+                    ),
+                    onPressed: () {
+                      showDialog<Tag>(
+                        context: context,
+                        builder: (context) => TagDialog(db: widget.db),
+                      ).then((value) {
+                        print(value);
+
+                        setState(() {});
+                      }).catchError((error) {
+                        print(error);
+                      });
+                    },
+                  )
+                ],
+              ),
+              ButtonBar(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    width: 70,
+                    child: FlatButton(
+                      child: Text("Cancel"),
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        _taskFieldController.clear();
+                        _dueDate = null;
+                        Tag selectedTag =
+                            await widget.db.tagDao.getTag("General");
+                        setState(() {
+                          _selectedTag = selectedTag;
+                        });
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 70,
+                    child: FlatButton(
+                      child: Text(
+                        "Update",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (_taskFieldController.value.text.isNotEmpty) {
+                          try {
+                            await widget.db.taskDao.updateTask(
+                              widget.task.task.copyWith(
+                                name: _taskFieldController.value.text,
+                                dueDate: _dueDate,
+                                tag: _selectedTag.name,
                               ),
                             );
                             Navigator.pop(context);
