@@ -34,6 +34,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Tasker',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          accentColor: Colors.lightBlue,
           brightness: Brightness.light,
         ),
         onGenerateRoute: Router.generateRoute,

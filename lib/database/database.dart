@@ -24,6 +24,13 @@ class AppDatabase extends _$AppDatabase {
                 ),
                 orReplace: true,
               );
+          await db.into(tags).insert(
+                TagsCompanion(
+                  name: Value("Important"),
+                  color: Value(material.Colors.red.value),
+                ),
+                orReplace: true,
+              );
         },
       );
 }

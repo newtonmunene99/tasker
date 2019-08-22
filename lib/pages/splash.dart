@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _timeout() {
-    Timer(Duration(seconds: 1), () {
+    Timer(Duration(seconds: 2), () {
       Navigator.pushReplacementNamed(context, "/home");
     });
   }
@@ -25,7 +25,13 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: Container(
         child: Center(
-          child: Text("Tasker"),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.4,
+            child: Image.asset(
+              "assets/images/logo.png",
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
       ),
     );

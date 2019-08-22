@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                                 page["name"],
                                 style: TextStyle(
                                   color: _currentIndex == i
-                                      ? Theme.of(context).primaryColor
+                                      ? Theme.of(context).accentColor
                                       : Colors.black54,
                                   letterSpacing: 1.0,
                                   fontWeight: FontWeight.w800,
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                               trailing: _currentIndex == i
                                   ? Icon(
                                       Icons.arrow_forward_ios,
-                                      color: Theme.of(context).primaryColor,
+                                      color: Theme.of(context).accentColor,
                                     )
                                   : null,
                               onTap: () {
