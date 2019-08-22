@@ -1,4 +1,5 @@
-# Tasker 😃
+# Tasker 😃 <img src="https://github.com/newtonmunene99/tasker/blob/master/assets/images/logo.png" width="50px">
+
 
 A simple todo app built with flutter.
 
