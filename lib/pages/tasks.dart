@@ -59,12 +59,7 @@ class _TasksPageState extends State<TasksPage> {
                           label: "Undo",
                           onPressed: () async {
                             await _db.taskDao.insertTask(
-                              TasksCompanion(
-                                name:
-                                    moor.Value(snapshot.data[index].task.name),
-                                completed: moor.Value(
-                                    snapshot.data[index].task.completed),
-                              ),
+                              snapshot.data[index].task.copyWith(),
                             );
                           },
                         ),
