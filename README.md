@@ -32,6 +32,7 @@ A simple todo app built with flutter.
 - [ ] Scheduled local notifications for tasks tagged as Important and have a due date.
 - [ ] Option to edit tags
 - [ ] Publish to play store
+- [ ] Redesign ui to custom design. (Not following Material/Cupertino)
 
 ## Icon/Logo
 
