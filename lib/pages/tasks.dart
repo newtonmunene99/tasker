@@ -96,11 +96,19 @@ class _TasksPageState extends State<TasksPage> {
                           if (_date != null) {
                             Duration _due = _date.difference(_today);
                             if (_due.inDays > 0) {
-                              return Text("Due in ${_due.inDays} day(s)");
+                              return Text("Due in ${_due.inDays.abs()} day(s)");
                             } else if (_due.inDays == 0) {
-                              return Text("Due today");
+                              if (_due.inHours < 0) {
+                                return Text(
+                                    "Due ${_due.inHours.abs()} hours ago");
+                              } else if (_due.inHours > 0) {
+                                return Text(
+                                    "Due in ${_due.inHours.abs()} hours");
+                              } else {
+                                return Text("Due today");
+                              }
                             } else if (_due.inDays < 0) {
-                              return Text("Due ${_due.inDays} ago");
+                              return Text("Due ${_due.inDays.abs()} days ago");
                             } else {
                               return Text("Not sure when it's due");
                             }
