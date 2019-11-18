@@ -6,7 +6,7 @@ part of 'database.dart';
 // MoorGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps
+// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Task extends DataClass implements Insertable<Task> {
   final int id;
   final String name;
@@ -59,7 +59,7 @@ class Task extends DataClass implements Insertable<Task> {
   }
 
   @override
-  T createCompanion<T extends UpdateCompanion<Task>>(bool nullToAbsent) {
+  TasksCompanion createCompanion(bool nullToAbsent) {
     return TasksCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
@@ -70,7 +70,7 @@ class Task extends DataClass implements Insertable<Task> {
           ? const Value.absent()
           : Value(dueDate),
       tag: tag == null && nullToAbsent ? const Value.absent() : Value(tag),
-    ) as T;
+    );
   }
 
   Task copyWith(
@@ -100,20 +100,18 @@ class Task extends DataClass implements Insertable<Task> {
 
   @override
   int get hashCode => $mrjf($mrjc(
-      $mrjc(
-          $mrjc(
-              $mrjc($mrjc(0, id.hashCode), name.hashCode), completed.hashCode),
-          dueDate.hashCode),
-      tag.hashCode));
+      id.hashCode,
+      $mrjc(name.hashCode,
+          $mrjc(completed.hashCode, $mrjc(dueDate.hashCode, tag.hashCode)))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is Task &&
-          other.id == id &&
-          other.name == name &&
-          other.completed == completed &&
-          other.dueDate == dueDate &&
-          other.tag == tag);
+          other.id == this.id &&
+          other.name == this.name &&
+          other.completed == this.completed &&
+          other.dueDate == this.dueDate &&
+          other.tag == this.tag);
 }
 
 class TasksCompanion extends UpdateCompanion<Task> {
@@ -129,6 +127,27 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.dueDate = const Value.absent(),
     this.tag = const Value.absent(),
   });
+  TasksCompanion.insert({
+    this.id = const Value.absent(),
+    @required String name,
+    this.completed = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.tag = const Value.absent(),
+  }) : name = Value(name);
+  TasksCompanion copyWith(
+      {Value<int> id,
+      Value<String> name,
+      Value<bool> completed,
+      Value<DateTime> dueDate,
+      Value<String> tag}) {
+    return TasksCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      completed: completed ?? this.completed,
+      dueDate: dueDate ?? this.dueDate,
+      tag: tag ?? this.tag,
+    );
+  }
 }
 
 class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
@@ -140,7 +159,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   @override
   GeneratedIntColumn get id => _id ??= _constructId();
   GeneratedIntColumn _constructId() {
-    return GeneratedIntColumn('id', $tableName, false, hasAutoIncrement: true);
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
   }
 
   final VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -291,12 +311,12 @@ class Tag extends DataClass implements Insertable<Tag> {
   }
 
   @override
-  T createCompanion<T extends UpdateCompanion<Tag>>(bool nullToAbsent) {
+  TagsCompanion createCompanion(bool nullToAbsent) {
     return TagsCompanion(
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       color:
           color == null && nullToAbsent ? const Value.absent() : Value(color),
-    ) as T;
+    );
   }
 
   Tag copyWith({String name, int color}) => Tag(
@@ -313,11 +333,11 @@ class Tag extends DataClass implements Insertable<Tag> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc($mrjc(0, name.hashCode), color.hashCode));
+  int get hashCode => $mrjf($mrjc(name.hashCode, color.hashCode));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
-      (other is Tag && other.name == name && other.color == color);
+      (other is Tag && other.name == this.name && other.color == this.color);
 }
 
 class TagsCompanion extends UpdateCompanion<Tag> {
@@ -327,6 +347,17 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     this.name = const Value.absent(),
     this.color = const Value.absent(),
   });
+  TagsCompanion.insert({
+    @required String name,
+    @required int color,
+  })  : name = Value(name),
+        color = Value(color);
+  TagsCompanion copyWith({Value<String> name, Value<int> color}) {
+    return TagsCompanion(
+      name: name ?? this.name,
+      color: color ?? this.color,
+    );
+  }
 }
 
 class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
@@ -408,7 +439,7 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
 }
 
 abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(const SqlTypeSystem.withDefaults(), e);
+  _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $TasksTable _tasks;
   $TasksTable get tasks => _tasks ??= $TasksTable(this);
   $TagsTable _tags;
@@ -429,7 +460,6 @@ mixin _$TaskDaoMixin on DatabaseAccessor<AppDatabase> {
   $TasksTable get tasks => db.tasks;
   $TagsTable get tags => db.tags;
 }
-
 mixin _$TagDaoMixin on DatabaseAccessor<AppDatabase> {
   $TagsTable get tags => db.tags;
 }

@@ -15,22 +15,22 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        beforeOpen: (db, details) async {
-          await db.customStatement('PRAGMA foreign_keys = ON');
-          await db.into(tags).insert(
-                TagsCompanion(
-                  name: Value("General"),
-                  color: Value(material.Colors.blue.value),
-                ),
-                orReplace: true,
-              );
-          await db.into(tags).insert(
-                TagsCompanion(
-                  name: Value("Important"),
-                  color: Value(material.Colors.red.value),
-                ),
-                orReplace: true,
-              );
+        beforeOpen: (details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
+          await into(tags).insert(
+            TagsCompanion(
+              name: Value("General"),
+              color: Value(material.Colors.blue.value),
+            ),
+            orReplace: true,
+          );
+          await into(tags).insert(
+            TagsCompanion(
+              name: Value("Important"),
+              color: Value(material.Colors.red.value),
+            ),
+            orReplace: true,
+          );
         },
       );
 }
