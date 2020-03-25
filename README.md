@@ -11,7 +11,7 @@ A simple todo app built with flutter.
 
 ## Getting Started
 
-1. `flutter create --androidx .` if android/ios folders aren't present.
+1. `flutter create -a kotlin --androidx --org com.yourdomainname .` if android/ios folders aren't present.
 2. `flutter packages get`
 3. `flutter run`
 

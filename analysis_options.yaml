@@ -1,0 +1,33 @@
+include: package:lint/analysis_options.yaml
+
+linter:
+  rules:
+    parameter_assignments: true
+    avoid_relative_lib_imports: true
+    avoid_types_as_parameter_names: true
+    cancel_subscriptions: true
+    close_sinks: true
+    unnecessary_statements: true
+    always_put_required_named_parameters_first: true
+    always_require_non_null_named_parameters: true
+    camel_case_types: true
+    file_names: true
+    flutter_style_todos: true
+    constant_identifier_names: false
+    prefer_const_declarations: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_constructors: true
+    package_api_docs: true
+    public_member_api_docs: true
+    slash_for_doc_comments: true
+
+analyzer:
+  errors:
+    missing_required_param: error
+    parameter_assignments: error
+    prefer_final_locals: warning
+    argument_type_not_assignable: warning
+    prefer_const_constructors: warning
+    package_api_docs: warning
+    public_member_api_docs: info
+    slash_for_doc_comments: warning

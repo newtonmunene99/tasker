@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
-import '../database/database.dart';
 import './tags.dart';
 import './tasks.dart';
-import '../widgets/bottom_sheet.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,12 +9,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController _taskFieldController = TextEditingController();
   final DateTime _today = DateTime.now();
-  PageController _controller =
+  final PageController _controller =
       PageController(initialPage: 0, viewportFraction: 1.0);
   int _currentIndex = 0;
-  List<Map<String, dynamic>> _pages = [
+  final List<Map<String, dynamic>> _pages = [
     {
       "name": "Tasks",
       "widget": TasksPage(),
@@ -60,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     _controller.animateToPage(
       index,
       curve: Curves.linear,
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     );
     Navigator.of(context).pop();
   }
@@ -69,89 +65,86 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(
-        child: Container(
-          decoration: BoxDecoration(),
-          child: Center(
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                ...(_pages
-                    .asMap()
-                    .map(
-                      (i, page) => MapEntry(
-                        i,
-                        Center(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            decoration: BoxDecoration(
-                              color: _currentIndex == i
-                                  ? Colors.grey[200]
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: ListTile(
-                              // leading: Icon(
-                              //   page["icon"],
-                              //   color: Colors.black54,
-                              // ),
-                              title: Text(
-                                page["name"],
-                                style: TextStyle(
-                                  color: _currentIndex == i
-                                      ? Theme.of(context).accentColor
-                                      : Colors.black54,
-                                  letterSpacing: 1.0,
-                                  fontWeight: FontWeight.w800,
-                                ),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              ..._pages
+                  .asMap()
+                  .map(
+                    (i, page) => MapEntry(
+                      i,
+                      Center(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          decoration: BoxDecoration(
+                            color: _currentIndex == i
+                                ? Colors.grey[200]
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: ListTile(
+                            // leading: Icon(
+                            //   page["icon"],
+                            //   color: Colors.black54,
+                            // ),
+                            title: Text(
+                              page["name"] as String,
+                              style: TextStyle(
+                                color: _currentIndex == i
+                                    ? Theme.of(context).accentColor
+                                    : Colors.black54,
+                                letterSpacing: 1.0,
+                                fontWeight: FontWeight.w800,
                               ),
-                              trailing: _currentIndex == i
-                                  ? Icon(
-                                      Icons.arrow_forward_ios,
-                                      color: Theme.of(context).accentColor,
-                                    )
-                                  : null,
-                              onTap: () {
-                                _navigateTo(i);
-                              },
                             ),
+                            trailing: _currentIndex == i
+                                ? Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Theme.of(context).accentColor,
+                                  )
+                                : null,
+                            onTap: () {
+                              _navigateTo(i);
+                            },
                           ),
                         ),
                       ),
-                    )
-                    .values
-                    .toList()),
-                Center(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
                     ),
-                    child: ListTile(
-                      // leading: Icon(
-                      //   Icons.exit_to_app,
-                      //   color: Colors.black54,
-                      // ),
-                      title: Text(
-                        "About",
-                        style: TextStyle(
-                          color: Colors.black54,
-                          letterSpacing: 1.0,
-                          fontWeight: FontWeight.w800,
-                        ),
+                  )
+                  .values
+                  .toList(),
+              Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: ListTile(
+                    // leading: Icon(
+                    //   Icons.exit_to_app,
+                    //   color: Colors.black54,
+                    // ),
+                    title: Text(
+                      "About",
+                      style: TextStyle(
+                        color: Colors.black54,
+                        letterSpacing: 1.0,
+                        fontWeight: FontWeight.w800,
                       ),
-                      onTap: () {},
                     ),
+                    onTap: () {},
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
       appBar: AppBar(
         title: Text(
           "${_currentIndex == 0 ? "Tasker" : _pages[_currentIndex]["name"]}",
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 40,
             letterSpacing: 1.0,
           ),
@@ -173,7 +166,7 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
             ),
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -239,122 +232,20 @@ class _HomePageState extends State<HomePage> {
         height: MediaQuery.of(context).size.height,
         child: PageView(
           controller: _controller,
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
+          scrollDirection: Axis.horizontal,
           children: <Widget>[
-            ...(_pages
+            ..._pages
                 .asMap()
                 .map(
-                  (i, page) => MapEntry(i, page["widget"]),
+                  (i, page) =>
+                      MapEntry<int, Widget>(i, page["widget"] as Widget),
                 )
                 .values
-                .toList())
+                .toList()
           ],
-          scrollDirection: Axis.horizontal,
         ),
       ),
-    );
-  }
-
-  void _addTask(BuildContext context, AppDatabase db) {
-    showModalBottomSheetApp(
-      context: context,
-      builder: (BuildContext bc) {
-        return Container(
-          color: Color(0xFF737373),
-          child: Container(
-            decoration: new BoxDecoration(
-              color: Colors.white,
-              borderRadius: new BorderRadius.only(
-                topLeft: const Radius.circular(10.0),
-                topRight: const Radius.circular(10.0),
-              ),
-            ),
-            child: Wrap(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8.0,
-                    horizontal: 16.0,
-                  ),
-                  child: TextField(
-                    controller: _taskFieldController,
-                    autofocus: true,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      hintText: "Task",
-                      hintStyle: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black54,
-                      ),
-                      focusedBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 8.0,
-                    bottom: 8.0,
-                    left: 16.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Icon(
-                        Feather.plus_circle,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      ButtonBar(
-                        children: <Widget>[
-                          FlatButton(
-                            child: Text("Cancel"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _taskFieldController.clear();
-                            },
-                          ),
-                          FlatButton(
-                            child: Text(
-                              "Save",
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            onPressed: () async {
-                              if (_taskFieldController.value.text.isNotEmpty) {
-                                try {
-                                  await db.taskDao.insertTask(
-                                    TasksCompanion(
-                                      name: moor.Value(
-                                          _taskFieldController.value.text),
-                                      completed: moor.Value(false),
-                                    ),
-                                  );
-                                  Navigator.pop(context);
-                                  _taskFieldController.clear();
-                                } catch (e) {
-                                  print(e);
-                                }
-                              } else {
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                  content: Text("Please input something"),
-                                  duration: Duration(
-                                    seconds: 5,
-                                  ),
-                                ));
-                              }
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

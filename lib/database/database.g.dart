@@ -37,7 +37,8 @@ class Task extends DataClass implements Insertable<Task> {
     );
   }
   factory Task.fromJson(Map<String, dynamic> json,
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
     return Task(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
@@ -47,9 +48,9 @@ class Task extends DataClass implements Insertable<Task> {
     );
   }
   @override
-  Map<String, dynamic> toJson(
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
-    return {
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'completed': serializer.toJson<bool>(completed),
@@ -104,7 +105,7 @@ class Task extends DataClass implements Insertable<Task> {
       $mrjc(name.hashCode,
           $mrjc(completed.hashCode, $mrjc(dueDate.hashCode, tag.hashCode)))));
   @override
-  bool operator ==(other) =>
+  bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Task &&
           other.id == this.id &&
@@ -178,7 +179,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   GeneratedBoolColumn get completed => _completed ??= _constructCompleted();
   GeneratedBoolColumn _constructCompleted() {
     return GeneratedBoolColumn('completed', $tableName, false,
-        defaultValue: Constant(false));
+        defaultValue: const Constant(false));
   }
 
   final VerificationMeta _dueDateMeta = const VerificationMeta('dueDate');
@@ -216,31 +217,23 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     final context = VerificationContext();
     if (d.id.present) {
       context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
-    } else if (id.isRequired && isInserting) {
-      context.missing(_idMeta);
     }
     if (d.name.present) {
       context.handle(
           _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
-    } else if (name.isRequired && isInserting) {
+    } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (d.completed.present) {
       context.handle(_completedMeta,
           completed.isAcceptableValue(d.completed.value, _completedMeta));
-    } else if (completed.isRequired && isInserting) {
-      context.missing(_completedMeta);
     }
     if (d.dueDate.present) {
       context.handle(_dueDateMeta,
           dueDate.isAcceptableValue(d.dueDate.value, _dueDateMeta));
-    } else if (dueDate.isRequired && isInserting) {
-      context.missing(_dueDateMeta);
     }
     if (d.tag.present) {
       context.handle(_tagMeta, tag.isAcceptableValue(d.tag.value, _tagMeta));
-    } else if (tag.isRequired && isInserting) {
-      context.missing(_tagMeta);
     }
     return context;
   }
@@ -295,16 +288,17 @@ class Tag extends DataClass implements Insertable<Tag> {
     );
   }
   factory Tag.fromJson(Map<String, dynamic> json,
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
     return Tag(
       name: serializer.fromJson<String>(json['name']),
       color: serializer.fromJson<int>(json['color']),
     );
   }
   @override
-  Map<String, dynamic> toJson(
-      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
-    return {
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
       'name': serializer.toJson<String>(name),
       'color': serializer.toJson<int>(color),
     };
@@ -335,7 +329,7 @@ class Tag extends DataClass implements Insertable<Tag> {
   @override
   int get hashCode => $mrjf($mrjc(name.hashCode, color.hashCode));
   @override
-  bool operator ==(other) =>
+  bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is Tag && other.name == this.name && other.color == this.color);
 }
@@ -400,13 +394,13 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
     if (d.name.present) {
       context.handle(
           _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
-    } else if (name.isRequired && isInserting) {
+    } else if (isInserting) {
       context.missing(_nameMeta);
     }
     if (d.color.present) {
       context.handle(
           _colorMeta, color.isAcceptableValue(d.color.value, _colorMeta));
-    } else if (color.isRequired && isInserting) {
+    } else if (isInserting) {
       context.missing(_colorMeta);
     }
     return context;
@@ -449,7 +443,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   TagDao _tagDao;
   TagDao get tagDao => _tagDao ??= TagDao(this as AppDatabase);
   @override
-  List<TableInfo> get allTables => [tasks, tags];
+  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [tasks, tags];
 }
 
 // **************************************************************************

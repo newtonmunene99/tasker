@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/material_picker.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:random_color/random_color.dart';
@@ -26,15 +26,15 @@ class _TagsPageState extends State<TagsPage> {
 
   @override
   Widget build(BuildContext context) {
-    AppDatabase _db = Provider.of<AppDatabase>(context);
+    final AppDatabase _db = Provider.of<AppDatabase>(context);
     return Scaffold(
       body: StreamBuilder<List<Tag>>(
         stream: _db.tagDao.watchAllTags(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.length > 0) {
+            if (snapshot.data.isNotEmpty) {
               return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 1.0,
                   mainAxisSpacing: 1.0,
@@ -93,11 +93,11 @@ class _TagsPageState extends State<TagsPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Feather.plus),
         onPressed: () {
           // Navigator.pushNamed(context, "/task/new");
           _addTag(context, _db);
         },
+        child: Icon(Feather.plus),
       ),
     );
   }
@@ -107,13 +107,13 @@ class _TagsPageState extends State<TagsPage> {
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          color: Color(0xFF737373),
+          color: const Color(0xFF737373),
           child: Container(
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: new BorderRadius.only(
-                topLeft: const Radius.circular(10.0),
-                topRight: const Radius.circular(10.0),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
               ),
             ),
             child: TagAdder(
@@ -218,7 +218,6 @@ class _TagAdderState extends State<TagAdder> {
                   SizedBox(
                     width: 70,
                     child: FlatButton(
-                      child: Text("Cancel"),
                       onPressed: () {
                         _tagFieldController.clear();
                         Navigator.pop(context);
@@ -226,17 +225,12 @@ class _TagAdderState extends State<TagAdder> {
                           _tagColor = _randomColor.randomColor();
                         });
                       },
+                      child: const Text("Cancel"),
                     ),
                   ),
                   SizedBox(
                     width: 60,
                     child: FlatButton(
-                      child: Text(
-                        "Save",
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
                       onPressed: () async {
                         if (_tagFieldController.value.text.isNotEmpty) {
                           try {
@@ -258,6 +252,12 @@ class _TagAdderState extends State<TagAdder> {
                           }
                         }
                       },
+                      child: Text(
+                        "Save",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
                   ),
                 ],

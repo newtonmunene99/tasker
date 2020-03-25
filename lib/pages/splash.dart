@@ -15,7 +15,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _timeout() {
-    Timer(Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacementNamed(context, "/home");
     });
   }
@@ -23,14 +23,12 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: Image.asset(
-              "assets/images/logo.png",
-              fit: BoxFit.cover,
-            ),
+      body: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: Image.asset(
+            "assets/images/logo.png",
+            fit: BoxFit.cover,
           ),
         ),
       ),

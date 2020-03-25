@@ -13,11 +13,11 @@ class Router {
         return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => HomePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = Offset(0.0, 1.0);
-            var end = Offset.zero;
-            var curve = Curves.linear;
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            const curve = Curves.linear;
 
-            var tween =
+            final tween =
                 Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
             return SlideTransition(
@@ -32,11 +32,11 @@ class Router {
           pageBuilder: (context, animation, secondaryAnimation) =>
               AddTaskPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            var begin = Offset(0.0, 1.0);
-            var end = Offset.zero;
-            var curve = Curves.linear;
+            const begin = Offset(0.0, 1.0);
+            const end = Offset.zero;
+            const curve = Curves.linear;
 
-            var tween =
+            final tween =
                 Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
             return SlideTransition(

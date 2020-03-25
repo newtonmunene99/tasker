@@ -19,7 +19,7 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
-  kiwi.Container _container = kiwi.Container();
+  final kiwi.Container _container = kiwi.Container();
   AppDatabase _appDatabase;
 
   @override
@@ -44,17 +44,17 @@ class _TasksPageState extends State<TasksPage> {
         stream: _db.taskDao.watchAllTasks(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data.length > 0) {
+            if (snapshot.data.isNotEmpty) {
               return ListView.separated(
-                separatorBuilder: (context, index) => Divider(),
+                separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
                   return Dismissible(
                     key: Key(snapshot.data[index].task.id.toString()),
                     onDismissed: (direction) async {
                       await _db.taskDao.deleteTask(snapshot.data[index].task);
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text("Deleted"),
-                        duration: Duration(seconds: 5),
+                        content: const Text("Deleted"),
+                        duration: const Duration(seconds: 5),
                         action: SnackBarAction(
                           label: "Undo",
                           onPressed: () async {
@@ -71,7 +71,6 @@ class _TasksPageState extends State<TasksPage> {
                         uncheckedColor: Color(snapshot.data[index].tag.color),
                         checked: snapshot.data[index].task.completed,
                         onChange: (value) async {
-                          print(value);
                           await _db.taskDao.updateTask(
                             snapshot.data[index].task
                                 .copyWith(completed: value),
@@ -92,9 +91,10 @@ class _TasksPageState extends State<TasksPage> {
                       ),
                       subtitle: Builder(
                         builder: (context) {
-                          DateTime _date = snapshot.data[index].task.dueDate;
+                          final DateTime _date =
+                              snapshot.data[index].task.dueDate;
                           if (_date != null) {
-                            Duration _due = _date.difference(_today);
+                            final Duration _due = _date.difference(_today);
                             if (_due.inDays > 0) {
                               return Text("Due in ${_due.inDays.abs()} day(s)");
                             } else if (_due.inDays == 0) {
@@ -105,15 +105,15 @@ class _TasksPageState extends State<TasksPage> {
                                 return Text(
                                     "Due in ${_due.inHours.abs()} hours");
                               } else {
-                                return Text("Due today");
+                                return const Text("Due today");
                               }
                             } else if (_due.inDays < 0) {
                               return Text("Due ${_due.inDays.abs()} days ago");
                             } else {
-                              return Text("Not sure when it's due");
+                              return const Text("Not sure when it's due");
                             }
                           } else {
-                            return SizedBox.shrink();
+                            return const SizedBox.shrink();
                           }
                         },
                       ),
@@ -122,7 +122,6 @@ class _TasksPageState extends State<TasksPage> {
                         color: Color(snapshot.data[index].tag.color),
                       ),
                       onLongPress: () {
-                        print("Long pressed");
                         _editTask(context, _db, snapshot.data[index]);
                       },
                     ),
@@ -131,27 +130,23 @@ class _TasksPageState extends State<TasksPage> {
                 itemCount: snapshot.data.length,
               );
             } else {
-              return Container(
-                child: Center(
-                  child: Text("No tasks yet"),
-                ),
+              return const Center(
+                child: Text("No tasks yet"),
               );
             }
           } else {
-            return Container(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Feather.plus),
         onPressed: () {
           // Navigator.pushNamed(context, "/task/new");
           _addTask(context, _db);
         },
+        child: Icon(Feather.plus),
       ),
     );
   }
@@ -161,13 +156,13 @@ class _TasksPageState extends State<TasksPage> {
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          color: Color(0xFF737373),
+          color: const Color(0xFF737373),
           child: Container(
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: new BorderRadius.only(
-                topLeft: const Radius.circular(10.0),
-                topRight: const Radius.circular(10.0),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
               ),
             ),
             child: TaskAdder(
@@ -190,13 +185,13 @@ class _TasksPageState extends State<TasksPage> {
       context: context,
       builder: (BuildContext bc) {
         return Container(
-          color: Color(0xFF737373),
+          color: const Color(0xFF737373),
           child: Container(
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: new BorderRadius.only(
-                topLeft: const Radius.circular(10.0),
-                topRight: const Radius.circular(10.0),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
               ),
             ),
             child: TaskEditor(
@@ -280,7 +275,7 @@ class _TaskAdderState extends State<TaskAdder> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () async {
-                      DateTime due = await showDatePicker(
+                      final DateTime due = await showDatePicker(
                         context: context,
                         firstDate: DateTime(
                           _today.year,
@@ -298,7 +293,7 @@ class _TaskAdderState extends State<TaskAdder> {
                       );
 
                       if (due != null) {
-                        TimeOfDay time = await showTimePicker(
+                        final TimeOfDay time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay(
                             hour: TimeOfDay.now().hour + 1,
@@ -331,8 +326,6 @@ class _TaskAdderState extends State<TaskAdder> {
                         context: context,
                         builder: (context) => TagDialog(db: widget.db),
                       ).then((value) {
-                        print(value);
-
                         setState(() {});
                       }).catchError((error) {
                         print(error);
@@ -347,28 +340,22 @@ class _TaskAdderState extends State<TaskAdder> {
                   SizedBox(
                     width: 70,
                     child: FlatButton(
-                      child: Text("Cancel"),
                       onPressed: () async {
                         Navigator.pop(context);
                         _taskFieldController.clear();
                         _dueDate = null;
-                        Tag selectedTag =
+                        final Tag selectedTag =
                             await widget.db.tagDao.getTag("General");
                         setState(() {
                           _selectedTag = selectedTag;
                         });
                       },
+                      child: const Text("Cancel"),
                     ),
                   ),
                   SizedBox(
                     width: 60,
                     child: FlatButton(
-                      child: Text(
-                        "Save",
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
                       onPressed: () async {
                         if (_taskFieldController.value.text.isNotEmpty) {
                           try {
@@ -376,7 +363,7 @@ class _TaskAdderState extends State<TaskAdder> {
                               TasksCompanion(
                                 name:
                                     moor.Value(_taskFieldController.value.text),
-                                completed: moor.Value(false),
+                                completed: const moor.Value(false),
                                 dueDate: moor.Value(_dueDate),
                                 tag: moor.Value(_selectedTag?.name),
                               ),
@@ -384,7 +371,7 @@ class _TaskAdderState extends State<TaskAdder> {
                             Navigator.pop(context);
                             _taskFieldController.clear();
                             _dueDate = null;
-                            Tag selectedTag =
+                            final Tag selectedTag =
                                 await widget.db.tagDao.getTag("General");
                             setState(() {
                               _selectedTag = selectedTag;
@@ -394,6 +381,12 @@ class _TaskAdderState extends State<TaskAdder> {
                           }
                         }
                       },
+                      child: Text(
+                        "Save",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -477,7 +470,7 @@ class _TaskEditorState extends State<TaskEditor> {
                       color: Theme.of(context).primaryColor,
                     ),
                     onPressed: () async {
-                      DateTime due = await showDatePicker(
+                      final DateTime due = await showDatePicker(
                         context: context,
                         firstDate: DateTime(
                           _today.year,
@@ -495,7 +488,7 @@ class _TaskEditorState extends State<TaskEditor> {
                       );
 
                       if (due != null) {
-                        TimeOfDay time = await showTimePicker(
+                        final TimeOfDay time = await showTimePicker(
                           context: context,
                           initialTime: TimeOfDay(
                             hour: TimeOfDay.now().hour + 1,
@@ -528,8 +521,6 @@ class _TaskEditorState extends State<TaskEditor> {
                         context: context,
                         builder: (context) => TagDialog(db: widget.db),
                       ).then((value) {
-                        print(value);
-
                         setState(() {});
                       }).catchError((error) {
                         print(error);
@@ -544,28 +535,22 @@ class _TaskEditorState extends State<TaskEditor> {
                   SizedBox(
                     width: 70,
                     child: FlatButton(
-                      child: Text("Cancel"),
                       onPressed: () async {
                         Navigator.pop(context);
                         _taskFieldController.clear();
                         _dueDate = null;
-                        Tag selectedTag =
+                        final Tag selectedTag =
                             await widget.db.tagDao.getTag("General");
                         setState(() {
                           _selectedTag = selectedTag;
                         });
                       },
+                      child: const Text("Cancel"),
                     ),
                   ),
                   SizedBox(
                     width: 70,
                     child: FlatButton(
-                      child: Text(
-                        "Update",
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
                       onPressed: () async {
                         if (_taskFieldController.value.text.isNotEmpty) {
                           try {
@@ -579,7 +564,7 @@ class _TaskEditorState extends State<TaskEditor> {
                             Navigator.pop(context);
                             _taskFieldController.clear();
                             _dueDate = null;
-                            Tag selectedTag =
+                            final Tag selectedTag =
                                 await widget.db.tagDao.getTag("General");
                             setState(() {
                               _selectedTag = selectedTag;
@@ -589,6 +574,12 @@ class _TaskEditorState extends State<TaskEditor> {
                           }
                         }
                       },
+                      child: Text(
+                        "Update",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -613,7 +604,7 @@ class _TagDialogState extends State<TagDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Tag your task"),
+      title: const Text("Tag your task"),
       content: StreamBuilder<List<Tag>>(
         stream: widget.db.tagDao.watchAllTags(),
         builder: (context, snapshot) {
@@ -638,31 +629,29 @@ class _TagDialogState extends State<TagDialog> {
               itemCount: snapshot.data.length,
             );
           } else {
-            return Container(
-              child: Center(
-                child: Text("No tags found. Add one in the tags page"),
-              ),
+            return const Center(
+              child: Text("No tags found. Add one in the tags page"),
             );
           }
         },
       ),
       actions: <Widget>[
         FlatButton(
+          onPressed: () {
+            Navigator.pop(context, null);
+          },
           child: Text(
             "Cancel",
             style: TextStyle(
               color: Colors.black54,
             ),
           ),
-          onPressed: () {
-            Navigator.pop(context, null);
-          },
         ),
         FlatButton(
-          child: Text("Tag"),
           onPressed: () {
             Navigator.pop(context, _selectedTag);
           },
+          child: const Text("Tag"),
         )
       ],
     );

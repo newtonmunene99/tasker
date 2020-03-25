@@ -1,5 +1,5 @@
 name: tasker
-description: A new Flutter project.
+description: A simple todo app built with flutter.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=2.3.0 <3.0.0"
@@ -19,24 +19,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  moor_flutter: ^2.0.0
+  moor_flutter: ^2.1.1
   flutter_vector_icons: ^0.2.1
-  provider: ^3.1.0+1
-  flutter_local_notifications: ^0.8.4+2
+  provider: ^4.0.4
   kiwi: ^0.2.0
   random_color: ^1.0.3
-  flutter_colorpicker: ^0.2.6
+  flutter_colorpicker: ^0.3.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^0.1.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  logger: ^0.7.0+2
+  lint: ^1.1.1
+  logger: ^0.8.3
   flutter_launcher_icons: ^0.7.4
-  moor_generator: ^2.1.0
+  moor_generator: ^2.4.0
   build_runner:
 
 flutter_icons:

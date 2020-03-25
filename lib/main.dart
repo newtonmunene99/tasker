@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import './services/router.dart';
-import './database/database.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
+
+import './database/database.dart';
+import './services/router.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,8 +14,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  kiwi.Container _container = kiwi.Container();
-  AppDatabase _appDatabase = AppDatabase();
+  final kiwi.Container _container = kiwi.Container();
+  final AppDatabase _appDatabase = AppDatabase();
 
   @override
   void initState() {
