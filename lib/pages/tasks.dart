@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:moor/moor.dart' as moor;
 import 'package:provider/provider.dart';
 import 'package:tasker/database/database.dart';
 import 'package:tasker/models/taskwithtag.dart';
 import 'package:tasker/widgets/bottom_sheet.dart';
 import 'package:tasker/widgets/checkbox.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:kiwi/kiwi.dart';
 
 TextEditingController _taskFieldController;
 DateTime _today;
@@ -19,7 +19,7 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
-  final kiwi.Container _container = kiwi.Container();
+  final KiwiContainer _container = KiwiContainer();
   AppDatabase _appDatabase;
 
   @override
@@ -38,7 +38,7 @@ class _TasksPageState extends State<TasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    AppDatabase _db = Provider.of<AppDatabase>(context);
+    final AppDatabase _db = Provider.of<AppDatabase>(context);
     return Scaffold(
       body: StreamBuilder<List<TaskWithTag>>(
         stream: _db.taskDao.watchAllTasks(),
@@ -146,7 +146,7 @@ class _TasksPageState extends State<TasksPage> {
           // Navigator.pushNamed(context, "/task/new");
           _addTask(context, _db);
         },
-        child: Icon(Feather.plus),
+        child: const Icon(Feather.plus),
       ),
     );
   }
@@ -158,9 +158,9 @@ class _TasksPageState extends State<TasksPage> {
         return Container(
           color: const Color(0xFF737373),
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
@@ -187,9 +187,9 @@ class _TasksPageState extends State<TasksPage> {
         return Container(
           color: const Color(0xFF737373),
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
@@ -229,7 +229,7 @@ class _TaskAdderState extends State<TaskAdder> {
             controller: _taskFieldController,
             autofocus: true,
             keyboardType: TextInputType.text,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Task",
               hintStyle: TextStyle(
                 fontWeight: FontWeight.w800,
@@ -424,7 +424,7 @@ class _TaskEditorState extends State<TaskEditor> {
             controller: _taskFieldController,
             autofocus: true,
             keyboardType: TextInputType.text,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: "Task",
               hintStyle: TextStyle(
                 fontWeight: FontWeight.w800,
@@ -613,7 +613,7 @@ class _TagDialogState extends State<TagDialog> {
               itemBuilder: (context, index) {
                 return RadioListTile<Tag>(
                   value: snapshot.data[index],
-                  title: Text("${snapshot.data[index].name}"),
+                  title: Text(snapshot.data[index].name),
                   secondary: Icon(
                     FontAwesome.tag,
                     color: Color(snapshot.data[index].color),
@@ -636,18 +636,18 @@ class _TagDialogState extends State<TagDialog> {
         },
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           onPressed: () {
             Navigator.pop(context, null);
           },
-          child: Text(
+          child: const Text(
             "Cancel",
             style: TextStyle(
               color: Colors.black54,
             ),
           ),
         ),
-        FlatButton(
+        TextButton(
           onPressed: () {
             Navigator.pop(context, _selectedTag);
           },

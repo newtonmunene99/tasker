@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:random_color/random_color.dart';
 import 'package:tasker/database/database.dart';
 import 'package:tasker/widgets/bottom_sheet.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:moor/moor.dart' as moor;
 
 TextEditingController _tagFieldController;
 Color _tagColor;

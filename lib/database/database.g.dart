@@ -8,10 +8,19 @@ part of 'database.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Task extends DataClass implements Insertable<Task> {
+  /// Task Id
   final int id;
+
+  /// Task name
   final String name;
+
+  /// Task completed status
   final bool completed;
+
+  /// Task due date
   final DateTime dueDate;
+
+  /// Task tag
   final String tag;
   Task(
       {@required this.id,
@@ -22,20 +31,53 @@ class Task extends DataClass implements Insertable<Task> {
   factory Task.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final intType = db.typeSystem.forDartType<int>();
-    final stringType = db.typeSystem.forDartType<String>();
-    final boolType = db.typeSystem.forDartType<bool>();
-    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Task(
-      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      completed:
-          boolType.mapFromDatabaseResponse(data['${effectivePrefix}completed']),
-      dueDate: dateTimeType
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      completed: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}completed']),
+      dueDate: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}due_date']),
-      tag: stringType.mapFromDatabaseResponse(data['${effectivePrefix}tag']),
+      tag: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}tag']),
     );
   }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || completed != null) {
+      map['completed'] = Variable<bool>(completed);
+    }
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<DateTime>(dueDate);
+    }
+    if (!nullToAbsent || tag != null) {
+      map['tag'] = Variable<String>(tag);
+    }
+    return map;
+  }
+
+  TasksCompanion toCompanion(bool nullToAbsent) {
+    return TasksCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      completed: completed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(completed),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+      tag: tag == null && nullToAbsent ? const Value.absent() : Value(tag),
+    );
+  }
+
   factory Task.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
@@ -57,21 +99,6 @@ class Task extends DataClass implements Insertable<Task> {
       'dueDate': serializer.toJson<DateTime>(dueDate),
       'tag': serializer.toJson<String>(tag),
     };
-  }
-
-  @override
-  TasksCompanion createCompanion(bool nullToAbsent) {
-    return TasksCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      completed: completed == null && nullToAbsent
-          ? const Value.absent()
-          : Value(completed),
-      dueDate: dueDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(dueDate),
-      tag: tag == null && nullToAbsent ? const Value.absent() : Value(tag),
-    );
   }
 
   Task copyWith(
@@ -105,7 +132,7 @@ class Task extends DataClass implements Insertable<Task> {
       $mrjc(name.hashCode,
           $mrjc(completed.hashCode, $mrjc(dueDate.hashCode, tag.hashCode)))));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Task &&
           other.id == this.id &&
@@ -135,6 +162,22 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.dueDate = const Value.absent(),
     this.tag = const Value.absent(),
   }) : name = Value(name);
+  static Insertable<Task> custom({
+    Expression<int> id,
+    Expression<String> name,
+    Expression<bool> completed,
+    Expression<DateTime> dueDate,
+    Expression<String> tag,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (completed != null) 'completed': completed,
+      if (dueDate != null) 'due_date': dueDate,
+      if (tag != null) 'tag': tag,
+    });
+  }
+
   TasksCompanion copyWith(
       {Value<int> id,
       Value<String> name,
@@ -148,6 +191,39 @@ class TasksCompanion extends UpdateCompanion<Task> {
       dueDate: dueDate ?? this.dueDate,
       tag: tag ?? this.tag,
     );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (completed.present) {
+      map['completed'] = Variable<bool>(completed.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (tag.present) {
+      map['tag'] = Variable<String>(tag.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TasksCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('completed: $completed, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
   }
 }
 
@@ -212,28 +288,30 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   @override
   final String actualTableName = 'tasks';
   @override
-  VerificationContext validateIntegrity(TasksCompanion d,
+  VerificationContext validateIntegrity(Insertable<Task> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.id.present) {
-      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     }
-    if (d.name.present) {
+    if (data.containsKey('name')) {
       context.handle(
-          _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name'], _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (d.completed.present) {
+    if (data.containsKey('completed')) {
       context.handle(_completedMeta,
-          completed.isAcceptableValue(d.completed.value, _completedMeta));
+          completed.isAcceptableOrUnknown(data['completed'], _completedMeta));
     }
-    if (d.dueDate.present) {
+    if (data.containsKey('due_date')) {
       context.handle(_dueDateMeta,
-          dueDate.isAcceptableValue(d.dueDate.value, _dueDateMeta));
+          dueDate.isAcceptableOrUnknown(data['due_date'], _dueDateMeta));
     }
-    if (d.tag.present) {
-      context.handle(_tagMeta, tag.isAcceptableValue(d.tag.value, _tagMeta));
+    if (data.containsKey('tag')) {
+      context.handle(
+          _tagMeta, tag.isAcceptableOrUnknown(data['tag'], _tagMeta));
     }
     return context;
   }
@@ -242,29 +320,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Task map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Task.fromData(data, _db, prefix: effectivePrefix);
-  }
-
-  @override
-  Map<String, Variable> entityToSql(TasksCompanion d) {
-    final map = <String, Variable>{};
-    if (d.id.present) {
-      map['id'] = Variable<int, IntType>(d.id.value);
-    }
-    if (d.name.present) {
-      map['name'] = Variable<String, StringType>(d.name.value);
-    }
-    if (d.completed.present) {
-      map['completed'] = Variable<bool, BoolType>(d.completed.value);
-    }
-    if (d.dueDate.present) {
-      map['due_date'] = Variable<DateTime, DateTimeType>(d.dueDate.value);
-    }
-    if (d.tag.present) {
-      map['tag'] = Variable<String, StringType>(d.tag.value);
-    }
-    return map;
+    return Task.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -274,19 +331,42 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
 }
 
 class Tag extends DataClass implements Insertable<Tag> {
+  /// Tag name. Has a minimum length of 1 and a maximum length of 20
   final String name;
+
+  /// Tag color
   final int color;
   Tag({@required this.name, @required this.color});
   factory Tag.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
-    final stringType = db.typeSystem.forDartType<String>();
-    final intType = db.typeSystem.forDartType<int>();
     return Tag(
-      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      color: intType.mapFromDatabaseResponse(data['${effectivePrefix}color']),
+      name: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      color: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}color']),
     );
   }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    if (!nullToAbsent || color != null) {
+      map['color'] = Variable<int>(color);
+    }
+    return map;
+  }
+
+  TagsCompanion toCompanion(bool nullToAbsent) {
+    return TagsCompanion(
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      color:
+          color == null && nullToAbsent ? const Value.absent() : Value(color),
+    );
+  }
+
   factory Tag.fromJson(Map<String, dynamic> json,
       {ValueSerializer serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
@@ -302,15 +382,6 @@ class Tag extends DataClass implements Insertable<Tag> {
       'name': serializer.toJson<String>(name),
       'color': serializer.toJson<int>(color),
     };
-  }
-
-  @override
-  TagsCompanion createCompanion(bool nullToAbsent) {
-    return TagsCompanion(
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      color:
-          color == null && nullToAbsent ? const Value.absent() : Value(color),
-    );
   }
 
   Tag copyWith({String name, int color}) => Tag(
@@ -329,7 +400,7 @@ class Tag extends DataClass implements Insertable<Tag> {
   @override
   int get hashCode => $mrjf($mrjc(name.hashCode, color.hashCode));
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Tag && other.name == this.name && other.color == this.color);
 }
@@ -346,11 +417,42 @@ class TagsCompanion extends UpdateCompanion<Tag> {
     @required int color,
   })  : name = Value(name),
         color = Value(color);
+  static Insertable<Tag> custom({
+    Expression<String> name,
+    Expression<int> color,
+  }) {
+    return RawValuesInsertable({
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+    });
+  }
+
   TagsCompanion copyWith({Value<String> name, Value<int> color}) {
     return TagsCompanion(
       name: name ?? this.name,
       color: color ?? this.color,
     );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<int>(color.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TagsCompanion(')
+          ..write('name: $name, ')
+          ..write('color: $color')
+          ..write(')'))
+        .toString();
   }
 }
 
@@ -388,18 +490,19 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
   @override
   final String actualTableName = 'tags';
   @override
-  VerificationContext validateIntegrity(TagsCompanion d,
+  VerificationContext validateIntegrity(Insertable<Tag> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
-    if (d.name.present) {
+    final data = instance.toColumns(true);
+    if (data.containsKey('name')) {
       context.handle(
-          _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name'], _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (d.color.present) {
+    if (data.containsKey('color')) {
       context.handle(
-          _colorMeta, color.isAcceptableValue(d.color.value, _colorMeta));
+          _colorMeta, color.isAcceptableOrUnknown(data['color'], _colorMeta));
     } else if (isInserting) {
       context.missing(_colorMeta);
     }
@@ -410,20 +513,8 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
   Set<GeneratedColumn> get $primaryKey => {name};
   @override
   Tag map(Map<String, dynamic> data, {String tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
-    return Tag.fromData(data, _db, prefix: effectivePrefix);
-  }
-
-  @override
-  Map<String, Variable> entityToSql(TagsCompanion d) {
-    final map = <String, Variable>{};
-    if (d.name.present) {
-      map['name'] = Variable<String, StringType>(d.name.value);
-    }
-    if (d.color.present) {
-      map['color'] = Variable<int, IntType>(d.color.value);
-    }
-    return map;
+    return Tag.fromData(data, _db,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
   @override
@@ -453,9 +544,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 // **************************************************************************
 
 mixin _$TaskDaoMixin on DatabaseAccessor<AppDatabase> {
-  $TasksTable get tasks => db.tasks;
-  $TagsTable get tags => db.tags;
+  $TasksTable get tasks => attachedDatabase.tasks;
+  $TagsTable get tags => attachedDatabase.tags;
 }
 mixin _$TagDaoMixin on DatabaseAccessor<AppDatabase> {
-  $TagsTable get tags => db.tags;
+  $TagsTable get tags => attachedDatabase.tags;
 }

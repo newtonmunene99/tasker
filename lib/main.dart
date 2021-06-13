@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:kiwi/kiwi.dart';
 
 import './database/database.dart';
-import './services/router.dart';
+import './services/router.dart' as app_router_service;
 
 void main() => runApp(MyApp());
 
@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final kiwi.Container _container = kiwi.Container();
+  final KiwiContainer _container = KiwiContainer();
   final AppDatabase _appDatabase = AppDatabase();
 
   @override
@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           accentColor: Colors.lightBlue,
           brightness: Brightness.light,
         ),
-        onGenerateRoute: Router.generateRoute,
+        onGenerateRoute: app_router_service.Router.generateRoute,
         initialRoute: "/",
         debugShowCheckedModeBanner: false,
       ),

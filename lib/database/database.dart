@@ -1,16 +1,30 @@
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart' as material;
-import 'package:moor_flutter/moor_flutter.dart';
+import 'package:moor/ffi.dart';
+import 'package:moor/moor.dart';
 import 'package:tasker/models/taskwithtag.dart';
 
 part 'database.g.dart';
+
+LazyDatabase _openConnection() {
+  // the LazyDatabase util lets us find the right location for the file async.
+  return LazyDatabase(() async {
+    // put the database file, called db.sqlite here, into the documents folder
+    // for your app.
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'database.sqlite'));
+    return VmDatabase(file);
+  });
+}
 
 /// This class defines our database.
 @UseMoor(tables: [Tasks, Tags], daos: [TaskDao, TagDao])
 class AppDatabase extends _$AppDatabase {
   /// Will Instantiate or create database at the specified path
-  AppDatabase()
-      : super(FlutterQueryExecutor.inDatabaseFolder(
-            path: 'database.sqlite', logStatements: true));
+  AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
@@ -19,19 +33,17 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
-          await into(tags).insert(
+          await into(tags).insertOnConflictUpdate(
             TagsCompanion(
               name: const Value("General"),
               color: Value(material.Colors.blue.value),
             ),
-            orReplace: true,
           );
-          await into(tags).insert(
+          await into(tags).insertOnConflictUpdate(
             TagsCompanion(
               name: const Value("Important"),
               color: Value(material.Colors.red.value),
             ),
-            orReplace: true,
           );
         },
       );
@@ -108,8 +120,9 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return (select(tasks)
           ..orderBy(
             ([
-              (t) =>
-                  OrderingTerm(expression: t.dueDate, mode: OrderingMode.asc),
+              (t) => OrderingTerm(
+                    expression: t.dueDate,
+                  ),
               (t) => OrderingTerm(expression: t.name),
             ]),
           ))
